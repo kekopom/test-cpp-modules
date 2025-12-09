@@ -1,11 +1,11 @@
 # Requirements
-cmake 4.0.3 or higher
-clang-19
+- cmake 4.1.2 or higher
+- clang-20.1.2
 
 # How to build
 ```bash
 mkdir build && cd build
-cmake .. -G Ninja
+cmake .. -G Ninja -DCMAKE_CXX_FLAGS=-stdlib=libc++
 cmake --build .
 ```
 
