@@ -16,4 +16,5 @@ export std::ostream &operator<<(std::ostream &os, const CarType &p) {
   case CarType::CONVERTIBLE:
     return os << "Convertible";
   }
+  return os;
 }

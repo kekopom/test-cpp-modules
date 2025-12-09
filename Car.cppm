@@ -7,11 +7,11 @@ public:
   void setNumberOfDoors(int doors) { numberOfDoors = doors; }
   void setType(CarType carType) { type = carType; }
 
-  CarType getType() const { return type; }
-  int getNumberOfDoors() const { return numberOfDoors; }
+  [[nodiscard]] CarType getType() const { return type; }
+  [[nodiscard]] int getNumberOfDoors() const { return numberOfDoors; }
 
 private:
-  int numberOfDoors;
+  int numberOfDoors{0};
   CarType type{};
 };
 
