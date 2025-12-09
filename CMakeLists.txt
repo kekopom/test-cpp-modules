@@ -18,4 +18,6 @@ target_sources(main
     CarType.cppm
     CarBuilder.cppm
     Car.cppm
+    Constants.cppm
+    CarTypePartitions.cppm
 )
