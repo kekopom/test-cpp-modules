@@ -18,25 +18,16 @@ jobs:
     # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
     # You can convert this to a matrix build if you need cross-platform coverage.
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-    runs-on: ubuntu-latest # If ubuntu version changes, must change "noble" as well in the CMake install step below
+    runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v6
 
-    # Steps from https://askubuntu.com/a/865294 
-    - name: Install CMake
-      run: |
-        sudo apt remove --purge --auto-remove cmake
-        sudo apt update
-        sudo apt install ca-certificates gpg wget
-        test -f /usr/share/doc/kitware-archive-keyring/copyright || wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
-        echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ noble main' | sudo tee /etc/apt/sources.list.d/kitware.list >/dev/null
-        sudo apt update
-        test -f /usr/share/doc/kitware-archive-keyring/copyright || sudo rm /usr/share/keyrings/kitware-archive-keyring.gpg
-        sudo apt install kitware-archive-keyring
-        sudo apt update
-        sudo apt install cmake
-        cmake --version
+    - name: Setup cmake
+      uses: jwlawson/actions-setup-cmake@v2
+      with:
+        cmake-version: '4.2.3'
+
+    - uses: actions/checkout@v6
 
     - name: Install clang
       run: |
