@@ -22,8 +22,11 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Configure environment
-      run: version=4.2 && build=3 && mkdir ~/temp && cd ~/temp && wget https://cmake.org/files/v$version/cmake-$version.$build.tar.gz && tar -xzvf cmake-$version.$build.tar.gz && cd cmake-$version.$build/ && ./bootstrap && make -j$(nproc)  && sudo make install && cmake --version
+    - name: Install CMake
+      run: version=4.2 && build=3 && mkdir ~/temp && cd ~/temp && wget https://cmake.org/files/v$version/cmake-$version.$build.tar.gz && tar -xzf cmake-$version.$build.tar.gz && cd cmake-$version.$build/ && ./bootstrap && make -j$(nproc)  && sudo make install && cmake --version && cd -
+
+    - name: Install clang
+      run: wget -qO- https://apt.llvm.org/llvm.sh | sudo bash -s -- 21 && sudo update-alternatives --install /usr/bin/cc cc /usr/bin/clang-21 100 && sudo update-alternatives --set cc /usr/bin/clang-21 && sudo update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang++-21 100 && sudo update-alternatives --set c++ /usr/bin/clang++-21 && sudo apt install libc++-21-dev && c++ --version
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
