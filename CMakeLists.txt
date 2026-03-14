@@ -1,4 +1,4 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 4.2.0)
+CMAKE_MINIMUM_REQUIRED(VERSION 4.3.2)
 set(CMAKE_EXPERIMENTAL_CXX_IMPORT_STD d0edc3af-4c50-42ea-a356-e2862fe7a444) # Must be up to date with https://github.com/Kitware/CMake/blob/master/Help/dev/experimental.rst
 project(main LANGUAGES CXX)
 
