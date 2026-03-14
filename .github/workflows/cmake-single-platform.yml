@@ -11,27 +11,48 @@ on:
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
+  CMAKE_VERSION: 4.2
+  CMAKE_BUILD: 3
+  CLANG_VERSION: 21
 
 jobs:
   build:
     # The CMake configure and build commands are platform agnostic and should work equally well on Windows or Mac.
     # You can convert this to a matrix build if you need cross-platform coverage.
     # See: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest # If ubuntu version changes, must change "noble" as well in the CMake install step below
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
 
+    # Steps from https://askubuntu.com/a/865294 
     - name: Install CMake
-      run: version=4.2 && build=3 && mkdir ~/temp && cd ~/temp && wget https://cmake.org/files/v$version/cmake-$version.$build.tar.gz && tar -xzf cmake-$version.$build.tar.gz && cd cmake-$version.$build/ && ./bootstrap && make -j$(nproc)  && sudo make install && cmake --version && cd -
+      run: |
+        sudo apt remove --purge --auto-remove cmake
+        sudo apt update
+        sudo apt install ca-certificates gpg wget
+        test -f /usr/share/doc/kitware-archive-keyring/copyright || wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
+        echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ noble main' | sudo tee /etc/apt/sources.list.d/kitware.list >/dev/null
+        sudo apt update
+        test -f /usr/share/doc/kitware-archive-keyring/copyright || sudo rm /usr/share/keyrings/kitware-archive-keyring.gpg
+        sudo apt install kitware-archive-keyring
+        sudo apt update
+        sudo apt install cmake
 
     - name: Install clang
-      run: wget -qO- https://apt.llvm.org/llvm.sh | sudo bash -s -- 21 && sudo update-alternatives --install /usr/bin/cc cc /usr/bin/clang-21 100 && sudo update-alternatives --set cc /usr/bin/clang-21 && sudo update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang++-21 100 && sudo update-alternatives --set c++ /usr/bin/clang++-21 && sudo apt install libc++-21-dev && c++ --version
+      run: |
+        wget -qO- https://apt.llvm.org/llvm.sh | sudo bash -s -- ${{env.CLANG_VERSION}}
+        sudo update-alternatives --install /usr/bin/cc cc /usr/bin/clang-${{env.CLANG_VERSION}} 100
+        sudo update-alternatives --set cc /usr/bin/clang-${{env.CLANG_VERSION}}
+        sudo update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang++-${{env.CLANG_VERSION}} 100
+        sudo update-alternatives --set c++ /usr/bin/clang++-${{env.CLANG_VERSION}}
+        sudo apt install libc++-${{env.CLANG_VERSION}}-dev
+        c++ --version
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G Ninja -DCMAKE_CXX_FLAGS=-stdlib=libc++ -DCMAKE_CXX_STDLIB_MODULES_JSON="/usr/lib/llvm-21/lib/libc++.modules.json"
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G Ninja -DCMAKE_CXX_FLAGS=-stdlib=libc++ -DCMAKE_CXX_STDLIB_MODULES_JSON="/usr/lib/llvm-${{env.CLANG_VERSION}}/lib/libc++.modules.json"
 
     - name: Build
       # Build your program with the given configuration
