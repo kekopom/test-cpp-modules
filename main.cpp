@@ -1,9 +1,11 @@
 import std;
 import Builder;
 import Car.Type; // Client can import submodule directly
+import Card;
 
 int main()
 {
+    Card card{};
     std::cout << "Import the STL library for best performance\n";
     const Car car = CarBuilder().buildDoors(4).buildType(CarType::SUV).build();
     std::cout << car << std::endl;

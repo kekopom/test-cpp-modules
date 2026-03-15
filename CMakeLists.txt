@@ -7,6 +7,8 @@ set(CMAKE_CXX_STANDARD "${CMAKE_CXX_STANDARD_LATEST}")
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+add_subdirectory(GameCard)
+
 add_executable(main)
 target_sources(main
     PUBLIC
@@ -20,4 +22,7 @@ target_sources(main
     Car.cppm
     Constants.cppm
     CarTypePartitions.cppm
+)
+target_link_libraries(main
+  game_card
 )
